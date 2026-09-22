@@ -1,17 +1,15 @@
 /**
- * Firebase config — replace these values from Firebase Console
- * Project settings → Your apps → Web app → config object
- *
- * Until you paste real keys, the form will show a clear setup message
- * and will NOT pretend to save successfully.
+ * Firebase config for Vision (vision-ef563)
+ * All India-wide signups save to Firestore collection: signups
  */
 export const firebaseConfig = {
-  apiKey: "PASTE_API_KEY",
-  authDomain: "PASTE_PROJECT_ID.firebaseapp.com",
-  projectId: "PASTE_PROJECT_ID",
-  storageBucket: "PASTE_PROJECT_ID.appspot.com",
-  messagingSenderId: "PASTE_SENDER_ID",
-  appId: "PASTE_APP_ID",
+  apiKey: "AIzaSyDjtUas9cHPivBYnM79K3irsjMz4s8CixQ",
+  authDomain: "vision-ef563.firebaseapp.com",
+  projectId: "vision-ef563",
+  storageBucket: "vision-ef563.firebasestorage.app",
+  messagingSenderId: "782982913623",
+  appId: "1:782982913623:web:4ec71b3753b9d063fe4d12",
+  measurementId: "G-ZBDN1X1SMN",
 };
 
 /** Collection name in Firestore where all India-wide signups land */

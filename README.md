@@ -35,33 +35,14 @@ People do **not** keep data on their own phones. The form sends details over the
 
 ---
 
-## 2. Create the central database (Firebase)
+## 2. Firebase (already connected)
 
-1. Go to [https://console.firebase.google.com](https://console.firebase.google.com) and sign in with Google.
-2. **Add project** → name it `vision` (or similar).
-3. Turn off Google Analytics if you want (optional).
-4. Inside the project:
-   - **Build → Firestore Database → Create database → Start in test mode** (OK for early collection; lock rules later).
-   - Choose a location close to India (e.g. `asia-south1`).
-5. **Project settings** (gear) → **Your apps → Web (`</>`)** → register app name `vision-web`.
-6. Copy the `firebaseConfig` object.
-7. Open `config.js` in this project and replace the `PASTE_…` values with your real keys.
+Project **Vision** (`vision-ef563`) keys are in `config.js`.
 
-Example:
+**Still required once** — Firestore rules so the form can write:
 
-```js
-export const firebaseConfig = {
-  apiKey: "AIza…",
-  authDomain: "vision-xxxx.firebaseapp.com",
-  projectId: "vision-xxxx",
-  storageBucket: "vision-xxxx.appspot.com",
-  messagingSenderId: "123…",
-  appId: "1:123…:web:abc…",
-};
-```
-
-8. In Firestore, allow writes for the `signups` collection while testing.  
-   **Firestore → Rules** (early / open for collection only):
+1. Firebase Console → **Firestore** → **Rules**
+2. Paste this, then **Publish**:
 
 ```
 rules_version = '2';
@@ -75,9 +56,9 @@ service cloud.firestore {
 }
 ```
 
-This lets anyone **submit** a form, but strangers cannot **read** your full user list from the browser.
+This lets anyone **submit** the form, but strangers cannot **read** your full list.
 
-9. Redeploy / push `config.js` to GitHub so Pages picks up the keys.
+3. Push updated `config.js` to GitHub so Pages uses the live keys.
 
 ---
 
