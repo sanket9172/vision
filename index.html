@@ -280,16 +280,62 @@
 
   <section class="desk" id="desk" hidden>
     <div class="desk-view" id="viewBillings" hidden>
-      <p class="eyebrow">Money in</p>
+      <p class="eyebrow">This week</p>
       <h2>Billings</h2>
-      <p class="desk-lead" id="billingLead">Who has paid, and how much in total.</p>
+      <p class="desk-lead" id="billingLead">Who has paid, who still has a due, and which PhonePe payments are waiting for approval.</p>
 
-      <form class="bill-form" id="billForm" hidden>
-        <h3>Add transaction</h3>
+      <div class="stat-row" id="billStats"></div>
+
+      <form class="bill-form admin-only" id="settingsForm" hidden>
+        <h3>Weekly amount and PhonePe</h3>
+        <div class="field-row">
+          <div class="field">
+            <label for="weeklyAmount">Weekly amount each person should pay (₹)</label>
+            <input id="weeklyAmount" name="weeklyAmount" type="number" min="0" step="1" required placeholder="0" />
+          </div>
+          <div class="field">
+            <label for="payPhone">Your PhonePe mobile</label>
+            <input id="payPhone" name="payPhone" type="tel" inputmode="numeric" maxlength="10" required placeholder="10-digit number" />
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Save settings</button>
+      </form>
+
+      <form class="bill-form admin-only" id="personForm" hidden>
+        <h3 id="personFormTitle">Add person</h3>
+        <input type="hidden" id="personId" />
+        <div class="field-row">
+          <div class="field">
+            <label for="personName">Name</label>
+            <input id="personName" name="personName" type="text" required placeholder="Name" />
+          </div>
+          <div class="field">
+            <label for="personPhone">Mobile</label>
+            <input id="personPhone" name="personPhone" type="tel" inputmode="numeric" maxlength="10" required placeholder="10-digit number" />
+          </div>
+        </div>
+        <div class="row-actions">
+          <button type="submit" class="btn btn-primary" id="personSave">Save person</button>
+          <button type="button" class="btn btn-ghost" id="personCancel" hidden>Cancel</button>
+        </div>
+      </form>
+
+      <div class="due-head">
+        <h3>Dues</h3>
+        <button type="button" class="btn btn-ghost" id="remindAll">Remind everyone who is due</button>
+      </div>
+      <div id="dueList" class="due-list"></div>
+
+      <form class="bill-form admin-only" id="billForm" hidden>
+        <h3>Add a payment</h3>
         <div class="field-row">
           <div class="field">
             <label for="payerName">Name</label>
             <input id="payerName" name="payerName" type="text" required placeholder="Who paid" />
+          </div>
+          <div class="field">
+            <label for="payerPhone">Mobile</label>
+            <input id="payerPhone" name="payerPhone" type="tel" inputmode="numeric" maxlength="10" placeholder="10-digit number" />
           </div>
           <div class="field">
             <label for="payerAmount">Amount (₹)</label>
@@ -300,9 +346,9 @@
             <input id="payerDate" name="payerDate" type="date" required />
           </div>
         </div>
-        <button type="submit" class="btn btn-primary" id="billSubmit">Add transaction</button>
-        <p class="form-status" id="billStatus" role="status" aria-live="polite"></p>
+        <button type="submit" class="btn btn-primary" id="billSubmit">Add payment</button>
       </form>
+      <p class="form-status" id="billStatus" role="status" aria-live="polite"></p>
 
       <div class="billing-layout">
         <div class="billing-list-wrap">
@@ -310,12 +356,13 @@
             <span>Date</span>
             <span>Name</span>
             <span>Amount</span>
+            <span>Status</span>
           </div>
           <div id="billingList" class="billing-list"></div>
         </div>
         <aside class="bill-total" id="billTotal">
           <p class="eyebrow">Total bill</p>
-          <p class="bill-empty">Select a record to see that person’s total.</p>
+          <p class="bill-empty">Select a name to see what is still due.</p>
         </aside>
       </div>
     </div>

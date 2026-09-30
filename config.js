@@ -15,5 +15,11 @@ export const firebaseConfig = {
 /** Collection name in Firestore where all India-wide signups land */
 export const COLLECTION_NAME = "signups";
 
-/** Payments added by Sanket */
+/** Payments added by Sanket or sent through PhonePe */
 export const TRANSACTIONS_COLLECTION = "transactions";
+
+/** People who pay the weekly amount */
+export const PAYERS_COLLECTION = "payers";
+
+/** One document: weekly amount and PhonePe number */
+export const SETTINGS_COLLECTION = "billingSettings";

@@ -54,14 +54,19 @@ service cloud.firestore {
       allow update, delete: if false;
     }
     match /transactions/{doc} {
-      allow read, create: if true;
-      allow update, delete: if false;
+      allow read, create, update, delete: if true;
+    }
+    match /payers/{doc} {
+      allow read, create, update, delete: if true;
+    }
+    match /billingSettings/{doc} {
+      allow read, write: if true;
     }
   }
 }
 ```
 
-Same rules are in `firestore.rules`. Publish them or Registered, History, and Billings cannot load.
+Same rules are in `firestore.rules`. Publish them or Registered, History, Billings, approvals, and edits cannot load.
 
 3. Push updated `config.js` to GitHub so Pages uses the live keys.
 

@@ -7,8 +7,13 @@ service cloud.firestore {
       allow update, delete: if false;
     }
     match /transactions/{doc} {
-      allow read, create: if true;
-      allow update, delete: if false;
+      allow read, create, update, delete: if true;
+    }
+    match /payers/{doc} {
+      allow read, create, update, delete: if true;
+    }
+    match /billingSettings/{doc} {
+      allow read, write: if true;
     }
   }
 }
