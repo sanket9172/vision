@@ -50,13 +50,18 @@ service cloud.firestore {
   match /databases/{database}/documents {
     match /signups/{doc} {
       allow create: if true;
-      allow read, update, delete: if false;
+      allow read: if true;
+      allow update, delete: if false;
+    }
+    match /transactions/{doc} {
+      allow read, create: if true;
+      allow update, delete: if false;
     }
   }
 }
 ```
 
-This lets anyone **submit** the form, but strangers cannot **read** your full list.
+Same rules are in `firestore.rules`. Publish them or Registered, History, and Billings cannot load.
 
 3. Push updated `config.js` to GitHub so Pages uses the live keys.
 

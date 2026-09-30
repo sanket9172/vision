@@ -14,3 +14,6 @@ export const firebaseConfig = {
 
 /** Collection name in Firestore where all India-wide signups land */
 export const COLLECTION_NAME = "signups";
+
+/** Payments added by Sanket */
+export const TRANSACTIONS_COLLECTION = "transactions";

@@ -632,3 +632,323 @@ textarea {
   color: var(--ink-muted);
   font-size: 0.92rem;
 }
+
+.header-end {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.login-open {
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.92rem;
+}
+
+.profile-btn[hidden] {
+  display: none;
+}
+
+.profile-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.28rem 0.8rem 0.28rem 0.28rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(26, 34, 30, 0.88);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--accent);
+  color: #1a1208;
+  font-size: 0.85rem;
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+  background: rgba(8, 10, 9, 0.72);
+}
+
+.modal[hidden] {
+  display: none;
+}
+
+.modal-card {
+  width: min(420px, 100%);
+  padding: 1.35rem 1.35rem 1.5rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.45);
+}
+
+.modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.modal-head h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  font-weight: 500;
+}
+
+.icon-close {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--ink);
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.side-panel {
+  position: fixed;
+  top: 76px;
+  right: 1rem;
+  z-index: 90;
+  width: min(260px, calc(100vw - 2rem));
+  padding: 0.7rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.45);
+}
+
+.side-panel[hidden] {
+  display: none;
+}
+
+.side-label {
+  margin: 0.2rem 0.55rem 0.45rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.side-panel button {
+  width: 100%;
+  margin: 0;
+  padding: 0.8rem 0.75rem;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.side-panel button:hover,
+.side-panel button:focus-visible {
+  background: var(--bg-soft);
+}
+
+.side-logout {
+  margin-top: 0.35rem !important;
+  color: var(--ink-muted) !important;
+  border-top: 1px solid var(--line) !important;
+  border-radius: 0 0 10px 10px !important;
+}
+
+body.desk-on main,
+body.desk-on .site-footer {
+  display: none;
+}
+
+.desk {
+  min-height: 100svh;
+  padding: 6.5rem 1.25rem 3rem;
+  background:
+    radial-gradient(ellipse 50% 40% at 100% 0%, rgba(232, 165, 75, 0.12), transparent 55%),
+    var(--bg);
+}
+
+.desk[hidden] {
+  display: none;
+}
+
+.desk h2 {
+  margin: 0 0 0.4rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  font-weight: 500;
+}
+
+.desk-lead {
+  margin: 0 0 1.5rem;
+  color: var(--ink-muted);
+}
+
+.bill-form {
+  margin-bottom: 1.5rem;
+  padding: 1.15rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+
+.bill-form h3 {
+  margin: 0 0 0.9rem;
+  font-size: 1rem;
+}
+
+.bill-form .btn {
+  margin-top: 0.2rem;
+}
+
+.billing-layout {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 860px) {
+  .billing-layout {
+    grid-template-columns: 1.4fr 0.8fr;
+    align-items: start;
+  }
+}
+
+.billing-list-wrap,
+.bill-total,
+.count-card,
+.history-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+
+.billing-head,
+.billing-row {
+  display: grid;
+  grid-template-columns: 1.1fr 1.2fr 0.9fr;
+  gap: 0.5rem;
+  padding: 0.85rem 1rem;
+}
+
+.billing-head {
+  color: var(--ink-muted);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.billing-row {
+  width: 100%;
+  border: none;
+  border-top: 1px solid var(--line);
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  font-size: 0.95rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.billing-row:hover,
+.billing-row.is-active {
+  background: rgba(232, 165, 75, 0.12);
+}
+
+.billing-row span:last-child,
+.billing-head span:last-child {
+  text-align: right;
+}
+
+.bill-total {
+  padding: 1.25rem;
+  position: sticky;
+  top: 6rem;
+}
+
+.bill-total h3 {
+  margin: 0.2rem 0 0.4rem;
+  font-size: 1.35rem;
+}
+
+.bill-empty {
+  margin: 0.4rem 0;
+  color: var(--ink-muted);
+}
+
+.count-card {
+  padding: 2rem 1.5rem;
+  max-width: 420px;
+}
+
+.count-num {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(4rem, 12vw, 6.5rem);
+  line-height: 0.95;
+  color: var(--accent);
+}
+
+.count-num-sm {
+  font-size: clamp(2.4rem, 5vw, 3.4rem);
+}
+
+.count-label {
+  margin: 0.35rem 0 0;
+  color: var(--ink-muted);
+}
+
+.history-list {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.history-card {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.1rem;
+}
+
+.history-card p {
+  margin: 0.2rem 0 0;
+  color: var(--ink-muted);
+  font-size: 0.9rem;
+}
+
+.history-card time {
+  color: var(--ink-muted);
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 420px) {
+  #profileName {
+    display: none;
+  }
+
+  .profile-btn {
+    padding-right: 0.28rem;
+  }
+}

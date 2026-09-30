@@ -14,15 +14,22 @@
   <div class="noise" aria-hidden="true"></div>
 
   <header class="site-header">
-    <a class="logo" href="#top">Vision</a>
+    <a class="logo" href="#top" id="logoLink">Vision</a>
     <nav class="nav">
       <a href="#trades">Trades</a>
       <a href="#how">How it works</a>
       <a href="#join" class="nav-cta">Join early</a>
     </nav>
-    <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false">
-      <span></span><span></span>
-    </button>
+    <div class="header-end">
+      <button type="button" class="nav-cta login-open" id="loginOpen">Login</button>
+      <button type="button" class="profile-btn" id="profileBtn" hidden aria-expanded="false" aria-controls="sidePanel">
+        <span class="avatar" id="avatarMark">S</span>
+        <span id="profileName">Profile</span>
+      </button>
+      <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+    </div>
   </header>
 
   <div class="mobile-nav" id="mobileNav" hidden>
@@ -241,6 +248,97 @@
       <p>Building India’s skilled connection network. Under development.</p>
     </div>
   </footer>
+
+  <div class="modal" id="loginModal" hidden>
+    <div class="modal-card">
+      <div class="modal-head">
+        <h2>Login</h2>
+        <button type="button" class="icon-close" id="loginClose" aria-label="Close">×</button>
+      </div>
+      <form id="loginForm" novalidate>
+        <div class="field">
+          <label for="username">Username</label>
+          <input id="username" name="username" type="text" autocomplete="username" required placeholder="Username" />
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" autocomplete="current-password" required placeholder="Password" />
+        </div>
+        <button type="submit" class="btn btn-primary btn-submit">Login</button>
+        <p class="form-status" id="loginStatus" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </div>
+
+  <aside class="side-panel" id="sidePanel" hidden>
+    <p class="side-label">Menu</p>
+    <button type="button" data-view="billings">Billings</button>
+    <button type="button" data-view="registered">Registered</button>
+    <button type="button" data-view="history">History</button>
+    <button type="button" class="side-logout" id="logoutBtn">Log out</button>
+  </aside>
+
+  <section class="desk" id="desk" hidden>
+    <div class="desk-view" id="viewBillings" hidden>
+      <p class="eyebrow">Money in</p>
+      <h2>Billings</h2>
+      <p class="desk-lead" id="billingLead">Who has paid, and how much in total.</p>
+
+      <form class="bill-form" id="billForm" hidden>
+        <h3>Add transaction</h3>
+        <div class="field-row">
+          <div class="field">
+            <label for="payerName">Name</label>
+            <input id="payerName" name="payerName" type="text" required placeholder="Who paid" />
+          </div>
+          <div class="field">
+            <label for="payerAmount">Amount (₹)</label>
+            <input id="payerAmount" name="payerAmount" type="number" min="1" step="1" required placeholder="0" />
+          </div>
+          <div class="field">
+            <label for="payerDate">Date</label>
+            <input id="payerDate" name="payerDate" type="date" required />
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary" id="billSubmit">Add transaction</button>
+        <p class="form-status" id="billStatus" role="status" aria-live="polite"></p>
+      </form>
+
+      <div class="billing-layout">
+        <div class="billing-list-wrap">
+          <div class="billing-head">
+            <span>Date</span>
+            <span>Name</span>
+            <span>Amount</span>
+          </div>
+          <div id="billingList" class="billing-list"></div>
+        </div>
+        <aside class="bill-total" id="billTotal">
+          <p class="eyebrow">Total bill</p>
+          <p class="bill-empty">Select a record to see that person’s total.</p>
+        </aside>
+      </div>
+    </div>
+
+    <div class="desk-view" id="viewRegistered" hidden>
+      <p class="eyebrow">Firebase</p>
+      <h2>Registered</h2>
+      <p class="desk-lead">People who submitted the join form.</p>
+      <div class="count-card">
+        <p class="count-num" id="registeredCount">—</p>
+        <p class="count-label">total registered</p>
+      </div>
+      <p class="form-status" id="registeredStatus" role="status"></p>
+    </div>
+
+    <div class="desk-view" id="viewHistory" hidden>
+      <p class="eyebrow">Signups</p>
+      <h2>History</h2>
+      <p class="desk-lead">Latest people added to Firebase.</p>
+      <div id="historyList" class="history-list"></div>
+      <p class="form-status" id="historyStatus" role="status"></p>
+    </div>
+  </section>
 
   <script type="module" src="app.js"></script>
 </body>
