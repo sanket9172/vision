@@ -4,20 +4,9 @@ import {
   collection,
   addDoc,
   getDocs,
-  getDoc,
-  setDoc,
-  updateDoc,
-  deleteDoc,
-  doc,
   serverTimestamp,
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
-import {
-  firebaseConfig,
-  COLLECTION_NAME,
-  TRANSACTIONS_COLLECTION,
-  PAYERS_COLLECTION,
-  SETTINGS_COLLECTION,
-} from "./config.js";
+import { firebaseConfig, COLLECTION_NAME, TRANSACTIONS_COLLECTION } from "./config.js";
 
 const ACCOUNTS = {
   sanket: "1703",
@@ -337,7 +326,7 @@ document.addEventListener("click", (event) => {
 
 function rulesHint(err) {
   if (err?.code === "permission-denied") {
-    return "Firebase is still blocking this. Open Firestore → Rules, paste the new firestore.rules, and click Publish.";
+    return "Firebase blocked this save. Wait a moment and try again.";
   }
   return "Could not load data. Check your internet and try again.";
 }
@@ -389,23 +378,67 @@ async function loadSignups() {
   signups.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
 }
 
+function recordTime(row) {
+  return row.savedAt || (row.createdAt?.seconds || 0) * 1000;
+}
+
+async function addRecord(data) {
+  await addDoc(collection(db, TRANSACTIONS_COLLECTION), {
+    ...data,
+    savedAt: Date.now(),
+    createdAt: serverTimestamp(),
+  });
+}
+
 async function loadTransactions() {
   const snap = await getDocs(collection(db, TRANSACTIONS_COLLECTION));
-  transactions = snap.docs.map((row) => ({ id: row.id, ...row.data() }));
-  transactions.sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
-}
+  const ledger = snap.docs
+    .map((row) => ({ id: row.id, ...row.data() }))
+    .filter((row) => row.kind !== "test" && row.name !== "_rulecheck")
+    .sort((a, b) => recordTime(a) - recordTime(b));
 
-async function loadPayers() {
-  const snap = await getDocs(collection(db, PAYERS_COLLECTION));
-  payers = snap.docs.map((row) => ({ id: row.id, ...row.data() }));
-  payers.sort((a, b) => personKey(a.name).localeCompare(personKey(b.name)));
-}
-
-async function loadSettings() {
-  const snap = await getDoc(doc(db, SETTINGS_COLLECTION, "config"));
-  billingSettings = snap.exists()
-    ? snap.data()
+  const latestSettings = ledger.filter((row) => row.kind === "settings").at(-1);
+  billingSettings = latestSettings
+    ? { weeklyAmount: Number(latestSettings.weeklyAmount) || 0, payPhone: latestSettings.payPhone || "" }
     : { weeklyAmount: 0, payPhone: "" };
+
+  const payerMap = new Map();
+  ledger
+    .filter((row) => row.kind === "payer")
+    .forEach((row) => payerMap.set(row.payerKey || personKey(row.name), row));
+  payers = [...payerMap.values()]
+    .filter((row) => !row.removed)
+    .map((row) => ({
+      id: row.payerKey || personKey(row.name),
+      name: row.name,
+      phone: row.phone || "",
+    }));
+
+  const changesByTarget = new Map();
+  ledger
+    .filter((row) => row.kind === "change" && row.targetId)
+    .forEach((row) => {
+      const list = changesByTarget.get(row.targetId) || [];
+      list.push(row);
+      changesByTarget.set(row.targetId, list);
+    });
+
+  transactions = ledger
+    .filter((row) => !row.kind || row.kind === "payment")
+    .map((row) => {
+      const current = { ...row };
+      for (const change of changesByTarget.get(row.id) || []) {
+        if (change.removed) return null;
+        if (change.name) current.name = change.name;
+        if (change.phone != null && change.phone !== "") current.phone = change.phone;
+        if (change.amount != null) current.amount = change.amount;
+        if (change.date) current.date = change.date;
+        if (change.status) current.status = change.status;
+      }
+      return current;
+    })
+    .filter(Boolean);
+  transactions.sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
 }
 
 function txStatus(row) {
@@ -692,7 +725,7 @@ async function openView(name) {
       await loadSignups();
     }
     if (name === "billings") {
-      await Promise.all([loadTransactions(), loadPayers(), loadSettings()]);
+      await loadTransactions();
     }
   } catch (err) {
     console.error(err);
@@ -736,7 +769,7 @@ sidePanel?.querySelectorAll("[data-view]").forEach((button) => {
 });
 
 async function refreshBilling() {
-  await Promise.all([loadTransactions(), loadPayers(), loadSettings()]);
+  await loadTransactions();
   renderBillings();
 }
 
@@ -750,11 +783,11 @@ document.getElementById("settingsForm")?.addEventListener("submit", async (event
     return;
   }
   try {
-    await setDoc(doc(db, SETTINGS_COLLECTION, "config"), {
+    await addRecord({
+      kind: "settings",
       weeklyAmount,
       payPhone,
       updatedBy: currentUser,
-      updatedAt: serverTimestamp(),
     });
     setBillStatus("Weekly amount and PhonePe number saved.", "ok");
     await refreshBilling();
@@ -775,17 +808,14 @@ document.getElementById("personForm")?.addEventListener("submit", async (event) 
     return;
   }
   try {
-    if (personId) {
-      await updateDoc(doc(db, PAYERS_COLLECTION, personId), { name, phone });
-      setBillStatus("Person updated.", "ok");
-    } else {
-      await addDoc(collection(db, PAYERS_COLLECTION), {
-        name,
-        phone,
-        createdAt: serverTimestamp(),
-      });
-      setBillStatus("Person added.", "ok");
-    }
+    await addRecord({
+      kind: "payer",
+      payerKey: personId || `p_${Date.now()}`,
+      name,
+      phone,
+      removed: false,
+    });
+    setBillStatus(personId ? "Person updated." : "Person added.", "ok");
     selectedName = personKey(name);
     resetPersonForm();
     await refreshBilling();
@@ -857,7 +887,8 @@ document.getElementById("viewBillings")?.addEventListener("click", async (event)
       return;
     }
     try {
-      await addDoc(collection(db, TRANSACTIONS_COLLECTION), {
+      await addRecord({
+        kind: "payment",
         name: person?.name || nameKey,
         phone: person?.phone || "",
         amount: due,
@@ -865,7 +896,6 @@ document.getElementById("viewBillings")?.addEventListener("click", async (event)
         status: "pending",
         method: "phonepe",
         addedBy: currentUser,
-        createdAt: serverTimestamp(),
       });
       setBillStatus("PhonePe opened. This stays pending until Sanket approves it.", "ok");
       await refreshBilling();
@@ -897,7 +927,14 @@ document.getElementById("viewBillings")?.addEventListener("click", async (event)
   if (action === "delete-person") {
     if (!id || !confirm("Delete this person? Their payments stay until you delete those too.")) return;
     try {
-      await deleteDoc(doc(db, PAYERS_COLLECTION, id));
+      const person = payers.find((item) => item.id === id);
+      await addRecord({
+        kind: "payer",
+        payerKey: id,
+        name: person?.name || "",
+        phone: person?.phone || "",
+        removed: true,
+      });
       setBillStatus("Person deleted.", "ok");
       await refreshBilling();
     } catch (err) {
@@ -909,10 +946,11 @@ document.getElementById("viewBillings")?.addEventListener("click", async (event)
 
   if (action === "approve-tx") {
     try {
-      await updateDoc(doc(db, TRANSACTIONS_COLLECTION, id), {
+      await addRecord({
+        kind: "change",
+        targetId: id,
         status: "approved",
         approvedBy: currentUser,
-        approvedAt: serverTimestamp(),
       });
       setBillStatus("Payment approved. It now counts toward the due.", "ok");
       await refreshBilling();
@@ -932,7 +970,13 @@ document.getElementById("viewBillings")?.addEventListener("click", async (event)
       return;
     }
     try {
-      await updateDoc(doc(db, TRANSACTIONS_COLLECTION, id), { name, amount, date });
+      await addRecord({
+        kind: "change",
+        targetId: id,
+        name,
+        amount,
+        date,
+      });
       selectedName = personKey(name);
       setBillStatus("Payment updated.", "ok");
       await refreshBilling();
@@ -946,7 +990,11 @@ document.getElementById("viewBillings")?.addEventListener("click", async (event)
   if (action === "delete-tx") {
     if (!confirm("Delete this payment?")) return;
     try {
-      await deleteDoc(doc(db, TRANSACTIONS_COLLECTION, id));
+      await addRecord({
+        kind: "change",
+        targetId: id,
+        removed: true,
+      });
       selectedTxId = "";
       setBillStatus("Payment deleted.", "ok");
       await refreshBilling();
@@ -979,7 +1027,8 @@ billForm?.addEventListener("submit", async (event) => {
   setBillStatus("Saving…");
 
   try {
-    await addDoc(collection(db, TRANSACTIONS_COLLECTION), {
+    await addRecord({
+      kind: "payment",
       name,
       phone,
       amount,
@@ -987,7 +1036,6 @@ billForm?.addEventListener("submit", async (event) => {
       status: "approved",
       method: "manual",
       addedBy: currentUser,
-      createdAt: serverTimestamp(),
     });
     billForm.payerName.value = "";
     billForm.payerPhone.value = "";
